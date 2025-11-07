@@ -1,0 +1,61 @@
+meta {
+  name: Connect 4 API
+  type: http
+  version: 1.0.0
+}
+
+vars {
+  baseUrl: http://localhost:8000
+  gameId: ~
+}
+
+post:new-game {
+  method: POST
+  url: {{baseUrl}}/api/game/new/
+  body: json
+  body:json {
+    {
+      "has_ai": false,
+      "ai_player": 2
+    }
+  }
+}
+
+post:new-game-ai {
+  method: POST
+  url: {{baseUrl}}/api/game/new/
+  body: json
+  body:json {
+    {
+      "has_ai": true,
+      "ai_player": 2
+    }
+  }
+}
+
+get:get-state {
+  method: GET
+  url: {{baseUrl}}/api/game/{{gameId}}/state/
+}
+
+post:make-move {
+  method: POST
+  url: {{baseUrl}}/api/game/{{gameId}}/move/
+  body: json
+  body:json {
+    {
+      "column": 0
+    }
+  }
+}
+
+post:ai-move {
+  method: POST
+  url: {{baseUrl}}/api/game/{{gameId}}/ai-move/
+}
+
+post:reset-game {
+  method: POST
+  url: {{baseUrl}}/api/game/{{gameId}}/reset/
+}
+

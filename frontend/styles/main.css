@@ -1,0 +1,265 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 20px;
+}
+
+.container {
+    background: white;
+    border-radius: 20px;
+    padding: 30px;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+    max-width: 800px;
+    width: 100%;
+}
+
+h1 {
+    text-align: center;
+    color: #333;
+    margin-bottom: 20px;
+    font-size: 2.5em;
+}
+
+.game-controls {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 15px;
+    margin-bottom: 20px;
+    flex-wrap: wrap;
+}
+
+.btn {
+    padding: 10px 20px;
+    border: none;
+    border-radius: 8px;
+    font-size: 16px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-weight: 600;
+}
+
+.btn-primary {
+    background: #667eea;
+    color: white;
+}
+
+.btn-primary:hover {
+    background: #5568d3;
+    transform: translateY(-2px);
+}
+
+.btn-secondary {
+    background: #6c757d;
+    color: white;
+}
+
+.btn-secondary:hover {
+    background: #5a6268;
+    transform: translateY(-2px);
+}
+
+.game-mode {
+    display: flex;
+    gap: 20px;
+    margin-left: 20px;
+}
+
+.game-mode label {
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+    font-size: 14px;
+}
+
+.game-mode input[type="radio"] {
+    margin-right: 5px;
+}
+
+.game-status {
+    text-align: center;
+    margin-bottom: 20px;
+    min-height: 30px;
+}
+
+#status-text {
+    font-size: 18px;
+    font-weight: 600;
+    color: #333;
+}
+
+.board-container {
+    display: flex;
+    justify-content: center;
+    padding: 20px;
+    position: relative;
+}
+
+.board {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 5px;
+    background: #ffd700; /* Yellow board */
+    padding: 10px;
+    border-radius: 10px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+}
+
+.cell {
+    width: 70px;
+    height: 70px;
+    background: white;
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    position: relative;
+    overflow: hidden;
+}
+
+.cell:hover:not(.filled) {
+    transform: scale(1.1);
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+}
+
+.cell.filled {
+    cursor: not-allowed;
+}
+
+.disc {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    position: absolute;
+}
+
+.disc.animate-drop {
+    animation: drop 0.5s ease-out;
+}
+
+.disc.player1 {
+    background: #dc3545; /* Red */
+    box-shadow: inset -5px -5px 10px rgba(0, 0, 0, 0.3);
+}
+
+.disc.player2 {
+    background: #000000; /* Black */
+    box-shadow: inset -5px -5px 10px rgba(255, 255, 255, 0.1);
+}
+
+/* All pieces fade to lighter colors when there's a winner, except winning pieces */
+.disc.losing-piece {
+    transition: background 0.5s ease;
+}
+
+.disc.player1.losing-piece {
+    background: #ff9999; /* Light red */
+}
+
+.disc.player2.losing-piece {
+    background: #666666; /* Light gray/black */
+}
+
+@keyframes drop {
+    from {
+        transform: translateY(-400px);
+        opacity: 0;
+    }
+    to {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}
+
+.winning-cell {
+    animation: pulse 1s infinite;
+}
+
+@keyframes pulse {
+    0%, 100% {
+        transform: scale(1);
+    }
+    50% {
+        transform: scale(1.1);
+    }
+}
+
+/* Fireworks animation */
+.fireworks-container {
+    position: absolute;
+    pointer-events: none;
+    z-index: 1000;
+    overflow: visible;
+}
+
+.firework {
+    position: absolute;
+    width: 6px;
+    height: 6px;
+    background: var(--firework-color, #ff6b6b);
+    border-radius: 50%;
+    animation: firework-explode 1.5s ease-out forwards;
+    transform-origin: center;
+}
+
+@keyframes firework-explode {
+    0% {
+        transform: scale(1);
+        opacity: 1;
+        box-shadow: 
+            0 0 0 0 var(--firework-color, #ff6b6b),
+            0 0 0 0 var(--firework-color, #ff6b6b),
+            0 0 0 0 var(--firework-color, #ff6b6b),
+            0 0 0 0 var(--firework-color, #ff6b6b),
+            0 0 0 0 var(--firework-color, #ff6b6b),
+            0 0 0 0 var(--firework-color, #ff6b6b),
+            0 0 0 0 var(--firework-color, #ff6b6b),
+            0 0 0 0 var(--firework-color, #ff6b6b);
+    }
+    50% {
+        transform: scale(0.5);
+        opacity: 1;
+    }
+    100% {
+        transform: scale(2);
+        opacity: 0;
+        box-shadow: 
+            -50px 0 10px -5px var(--firework-color, #ff6b6b),
+            50px 0 10px -5px var(--firework-color, #ff6b6b),
+            0 -50px 10px -5px var(--firework-color, #ff6b6b),
+            0 50px 10px -5px var(--firework-color, #ff6b6b),
+            -35px -35px 10px -5px var(--firework-color, #ff6b6b),
+            35px -35px 10px -5px var(--firework-color, #ff6b6b),
+            -35px 35px 10px -5px var(--firework-color, #ff6b6b),
+            35px 35px 10px -5px var(--firework-color, #ff6b6b);
+    }
+}
+
+@media (max-width: 600px) {
+    .cell {
+        width: 50px;
+        height: 50px;
+    }
+    
+    .disc {
+        width: 45px;
+        height: 45px;
+    }
+    
+    h1 {
+        font-size: 2em;
+    }
+}
+
