@@ -1,0 +1,22 @@
+meta {
+  name: Make Move (Column 6)
+  type: http
+  seq: 3
+}
+
+post {
+  url: {{baseUrl}}/api/game/{{gameId}}/move/
+  body: json
+  body:json {
+    {
+      "column": 6
+    }
+  }
+}
+
+docs {
+# Make Move (Rightmost)
+
+Make a move in column 6 (rightmost column).
+}
+

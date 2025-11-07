@@ -1,0 +1,17 @@
+meta {
+  name: Health Check
+  type: http
+  seq: 1
+}
+
+get {
+  url: {{baseUrl}}/health/
+  body: none
+}
+
+docs {
+# Health Check
+
+Health check endpoint for server startup verification.
+}
+

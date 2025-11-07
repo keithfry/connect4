@@ -1,0 +1,17 @@
+meta {
+  name: Get Game State
+  type: http
+  seq: 1
+}
+
+get {
+  url: {{baseUrl}}/api/game/{{gameId}}/state/
+  body: none
+}
+
+docs {
+# Get Game State
+
+Get the current state of the game including board, current player, status, and winner (if any).
+}
+

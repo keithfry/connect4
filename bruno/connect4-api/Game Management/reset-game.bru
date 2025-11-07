@@ -1,0 +1,17 @@
+meta {
+  name: Reset Game
+  type: http
+  seq: 3
+}
+
+post {
+  url: {{baseUrl}}/api/game/{{gameId}}/reset/
+  body: none
+}
+
+docs {
+# Reset Game
+
+Reset the current game to initial state.
+}
+

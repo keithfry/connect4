@@ -1,0 +1,19 @@
+meta {
+  name: AI Move
+  type: http
+  seq: 1
+}
+
+post {
+  url: {{baseUrl}}/api/game/{{gameId}}/ai-move/
+  body: none
+}
+
+docs {
+# AI Move
+
+Request an AI move. Only works if:
+- The game was created with `has_ai: true`
+- It's currently the AI's turn
+}
+

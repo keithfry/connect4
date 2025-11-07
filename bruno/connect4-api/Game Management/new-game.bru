@@ -1,0 +1,25 @@
+meta {
+  name: New Game
+  type: http
+  seq: 1
+}
+
+post {
+  url: {{baseUrl}}/api/game/new/
+  body: json
+  body:json {
+    {
+      "has_ai": false,
+      "ai_player": 2
+    }
+  }
+}
+
+docs {
+# Create New Game
+
+Create a new human vs human game session.
+
+**Response**: Returns game state with `game_id` that should be saved to the `gameId` variable.
+}
+
