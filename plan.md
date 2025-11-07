@@ -135,7 +135,7 @@ Connect 4 is a two-player connection game where players take turns dropping colo
 - **uv** - Fast Python package installer and resolver (virtual environment management)
 - **Bruno** - API testing tool (alternative to Postman)
 - **Playwright** - End-to-end testing framework for UI
-- **Playwright MCP** - Model Context Protocol integration for Playwright
+- **Playwright MCP Server** - Official Playwright MCP server from GitHub for AI-assisted testing
 - **Modern browser** - Testing (Chrome, Firefox, Safari, Edge)
 
 ### Project Structure
@@ -234,7 +234,7 @@ connect4/
 - Improve UI/UX
 - Add visual feedback and animations
 - Write Playwright E2E tests (`tests/e2e/game-flow.spec.js`)
-- Test edge cases with Playwright MCP
+- Note: Official Playwright MCP server can be set up separately for AI-assisted testing
 - Optimize performance
 - Handle error states
 - Run full test suite (backend unit tests + E2E tests)

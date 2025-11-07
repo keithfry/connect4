@@ -101,6 +101,12 @@ python manage.py test
 
 **Note**: Make sure both backend and frontend servers are running, or use the Playwright config which starts them automatically.
 
+### Playwright MCP Server
+
+To use the official Playwright MCP server for AI-assisted testing, follow the setup instructions from the [Playwright MCP GitHub repository](https://github.com/playwright-community/playwright-mcp).
+
+The Playwright MCP server allows AI assistants to run tests, debug failures, and generate test code programmatically.
+
 ## API Testing with Bruno
 
 Import the Bruno collection from `bruno/connect4-api.bru` to test the API endpoints.
