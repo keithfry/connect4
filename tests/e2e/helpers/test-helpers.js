@@ -9,7 +9,14 @@ export const API_BASE_URL = 'http://localhost:8000';
  * Wait for game to be initialized
  */
 export async function waitForGameInitialized(page) {
-  await page.waitForSelector('#status-text:not(:has-text("Click"))', { timeout: 5000 });
+  // Wait for status to show a player's turn (not "Creating new game..." or "Click...")
+  await page.waitForFunction(
+    () => {
+      const statusText = document.querySelector('#status-text')?.textContent || '';
+      return statusText.includes('Player') || statusText.includes('wins') || statusText.includes('draw');
+    },
+    { timeout: 5000 }
+  );
 }
 
 /**

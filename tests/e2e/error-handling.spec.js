@@ -55,6 +55,7 @@ test.describe('Error Handling', () => {
   });
 
   test('should handle full column gracefully', async ({ page }) => {
+    await page.goto(FRONTEND_URL);
     await createNewGame(page, false);
     
     // Fill column 0
