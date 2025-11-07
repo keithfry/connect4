@@ -17,6 +17,12 @@ from .ai.basic_ai import BasicAI
 _game_sessions: Dict[str, GameSession] = {}
 
 
+@api_view(['GET'])
+def health_check(request):
+    """Health check endpoint for server startup verification."""
+    return Response({'status': 'ok'}, status=status.HTTP_200_OK)
+
+
 @api_view(['POST'])
 def new_game(request):
     """Create a new game session."""

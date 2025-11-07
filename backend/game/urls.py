@@ -8,6 +8,7 @@ from . import views
 app_name = 'game'
 
 urlpatterns = [
+    path('health/', views.health_check, name='health_check'),
     path('api/game/new/', views.new_game, name='new_game'),
     path('api/game/<str:game_id>/move/', views.make_move, name='make_move'),
     path('api/game/<str:game_id>/state/', views.get_state, name='get_state'),
