@@ -31,11 +31,13 @@ A web-based Connect 4 game with Django backend and JavaScript frontend, featurin
    uv pip install django djangorestframework pydantic django-cors-headers
    ```
 
-3. Run Django migrations:
+3. Run Django migrations (optional - not currently using database):
    ```bash
    cd backend
    python manage.py migrate
    ```
+   
+   **Note**: The project currently uses JSON file storage for game data, so migrations are not required. Django migrations will be needed if/when database models are added in the future.
 
 4. Start the Django server:
    ```bash
