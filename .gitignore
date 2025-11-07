@@ -37,4 +37,10 @@ Thumbs.db
 .pytest_cache/
 .coverage
 htmlcov/
+test-results/
+playwright-report/
+
+# Node.js
+node_modules/
+package-lock.json
 
