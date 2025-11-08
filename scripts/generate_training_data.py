@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 """
 Generate training data via self-play between minimax AIs.
+Can optionally augment with real game data from backend/game_data.
 """
 
 import sys
@@ -14,14 +15,45 @@ import argparse
 import numpy as np
 import multiprocessing
 from typing import List
-from backend.game.ai.data_generator import (
-    generate_games,
-    extract_training_data,
-    save_training_data,
-    TrainingExample,
-    play_minimax_game
-)
 
+# Import from backend - need project root in path (not backend itself)
+project_root = Path(__file__).parent.parent.resolve()
+project_root_str = str(project_root)
+if project_root_str not in sys.path:
+    sys.path.insert(0, project_root_str)
+
+# Try to import data_generator
+# Note: This requires the virtual environment to be activated (source .venv/bin/activate)
+# or run with: .venv/bin/python scripts/generate_training_data.py
+try:
+    from backend.game.ai.data_generator import (
+        generate_games,
+        extract_training_data,
+        save_training_data,
+        TrainingExample,
+        play_minimax_game
+    )
+except (ModuleNotFoundError, ImportError) as e:
+    error_msg = str(e).lower()
+    if 'tensorflow' in error_msg or 'backend.game' in error_msg or 'backend' in error_msg:
+        print("ERROR: Failed to import backend modules.")
+        print("This script requires the virtual environment to be activated.")
+        print("\nPlease run one of:")
+        print("  source .venv/bin/activate")
+        print("  python scripts/generate_training_data.py ...")
+        print("\nOr directly:")
+        print("  .venv/bin/python scripts/generate_training_data.py ...")
+        print("\nIf using uv:")
+        print("  uv run python scripts/generate_training_data.py ...")
+        sys.exit(1)
+    raise
+# Import parse_game_data - adjust path as needed
+sys.path.insert(0, str(Path(__file__).parent))
+from parse_game_data import parse_all_game_files
+
+
+# Store project root at module level for worker processes (as string for pickling)
+_PROJECT_ROOT = str(Path(__file__).parent.parent.resolve())
 
 # Module-level function for multiprocessing (must be picklable)
 def _generate_single_game_worker(args_tuple):
@@ -30,6 +62,20 @@ def _generate_single_game_worker(args_tuple):
     This function is defined at module level so it can be pickled
     for use with multiprocessing. Each subprocess will import this.
     """
+    # Set up path in worker process (multiprocessing doesn't inherit sys.path changes)
+    import sys
+    if _PROJECT_ROOT not in sys.path:
+        sys.path.insert(0, _PROJECT_ROOT)
+    
+    # Import here so it works in worker processes
+    # Project root should already be in path from _PROJECT_ROOT, but ensure it
+    if _PROJECT_ROOT not in sys.path:
+        sys.path.insert(0, _PROJECT_ROOT)
+    
+    # Import the module directly (same as main process)
+    import backend.game.ai.data_generator as _dg
+    play_minimax_game = _dg.play_minimax_game
+    
     game_index, p1_depth, p2_depth, rand_first, vary = args_tuple
     # Vary depths for more diversity
     if vary:
@@ -62,6 +108,10 @@ def main():
                        help='Number of parallel threads (default: 10)')
     parser.add_argument('--save-interval', type=int, default=250,
                        help='Save data every N games (default: 250)')
+    parser.add_argument('--include-game-data', action='store_true',
+                       help='Include real game data from backend/game_data')
+    parser.add_argument('--game-data-dir', type=str, default='backend/game_data',
+                       help='Directory containing game JSON files (default: backend/game_data)')
     
     args = parser.parse_args()
     
@@ -71,6 +121,13 @@ def main():
     
     output_path = Path(args.output)
     output_path.parent.mkdir(parents=True, exist_ok=True)
+    
+    # Parse real game data if requested
+    game_data_examples = []
+    if args.include_game_data:
+        print(f"\nParsing game data from {args.game_data_dir}...")
+        game_data_examples = parse_all_game_files(args.game_data_dir)
+        print(f"Loaded {len(game_data_examples)} examples from real game data")
     
     # Collections for incremental writing (multiprocessing-safe using Manager)
     manager = multiprocessing.Manager()
@@ -130,6 +187,11 @@ def main():
         
         # Convert manager list to regular list
         examples = list(all_examples)
+        
+        # Add game data examples if included
+        if game_data_examples:
+            print(f"\nAdding {len(game_data_examples)} examples from real game data...")
+            examples.extend(game_data_examples)
     else:
         # Sequential generation
         def wrapped_progress_callback(current, total):
@@ -148,6 +210,11 @@ def main():
             num_threads=1
         )
         
+        # Add game data examples if included
+        if game_data_examples:
+            print(f"\nAdding {len(game_data_examples)} examples from real game data...")
+            examples.extend(game_data_examples)
+        
         # Save incrementally for sequential generation too
         for i in range(0, args.games, args.save_interval):
             if i + args.save_interval <= len(examples) or i == 0:
@@ -165,7 +232,12 @@ def main():
     save_training_data(X, y, str(output_path))
     
     print(f"\nDone! Training data saved to {output_path}")
-    print(f"Total: {len(examples)} examples from {args.games} games")
+    print(f"Total: {len(examples)} examples")
+    if args.include_game_data:
+        print(f"  - {args.games} games from self-play")
+        print(f"  - {len(game_data_examples)} examples from real game data")
+    else:
+        print(f"  - {args.games} games from self-play")
 
 
 if __name__ == '__main__':
