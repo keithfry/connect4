@@ -150,7 +150,24 @@ connect4/
 
 - **Backend**: Django, Django REST Framework, Pydantic
 - **Frontend**: Vanilla JavaScript, HTML5, CSS3
+- **AI**: Minimax algorithm, Neural Network (TensorFlow/Keras)
 - **Testing**: Django TestCase, Playwright
 - **API Testing**: Bruno
 - **Package Management**: uv (Python)
+
+## Neural Network AI
+
+The project includes a neural network-based AI trained through self-play. See `backend/game/ai/README.md` for details on training and using the neural network AI.
+
+Quick start:
+```bash
+# Install dependencies (TensorFlow supports Apple Silicon natively in 2.15+)
+uv pip install tensorflow numpy scikit-learn
+
+# Generate training data
+python scripts/generate_training_data.py --games 10000
+
+# Train model
+python scripts/train_model.py --data training_data/processed/training_data.npz --epochs 50
+```
 

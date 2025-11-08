@@ -39,24 +39,32 @@ class BasicAI:
         if not valid_moves:
             return 0
         
-        best_move = valid_moves[0]
-        best_score = float('-inf')
-        
+        # Check for winning moves first
         for move in valid_moves:
             test_board = Board(board.get_board())
             test_board.place_piece(move, current_player)
-            
-            # Check if this move wins
             winner = WinChecker.check_winner(test_board)
             if winner == current_player:
                 return move
-            
-            score = self._minimax(test_board, self.depth - 1, False, current_player)
-            if score > best_score:
-                best_score = score
-                best_move = move
         
-        return best_move
+        # Evaluate all moves
+        move_scores = []
+        for move in valid_moves:
+            test_board = Board(board.get_board())
+            test_board.place_piece(move, current_player)
+            score = self._minimax(test_board, self.depth - 1, False, current_player)
+            move_scores.append((move, score))
+        
+        # Find best score
+        best_score = max(score for _, score in move_scores)
+        
+        # Get all moves with best score (for randomness in tie-breaking)
+        best_moves = [move for move, score in move_scores if score == best_score]
+        
+        # Add some randomness: if multiple moves have the same score, choose randomly
+        # This adds variety to training data
+        import random
+        return random.choice(best_moves)
     
     def _minimax(self, board: Board, depth: int, maximizing: bool, ai_player: int) -> int:
         """

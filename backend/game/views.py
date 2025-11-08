@@ -11,6 +11,7 @@ from .game_session import GameSession
 from .board import Board
 from .serializers import NewGameRequest, MoveRequest, GameStateResponse, ErrorResponse
 from .ai.basic_ai import BasicAI
+from .ai.neural_ai import NeuralAI
 
 
 # In-memory storage for game sessions
@@ -134,11 +135,52 @@ def ai_move(request, game_id: str):
                 status=status.HTTP_400_BAD_REQUEST
             )
         
-        # Get AI move
-        ai = BasicAI(depth=4)
+        # Get AI move - use neural AI (trained model)
+        import logging
+        logger = logging.getLogger(__name__)
+        
+        # Try to load neural AI
+        ai = None
+        try:
+            ai = NeuralAI(model_version="v1")
+            # Verify model actually loaded (not just fallback)
+            if ai.model is not None and ai.masked_model is not None:
+                # Check if it's a trained model by checking if weights are non-zero
+                # (simple heuristic - if model exists, assume it's trained)
+                model_file = ai.model_path / f"cnn_{ai.model_version}_best.h5"
+                if not model_file.exists():
+                    model_file = ai.model_path / f"cnn_{ai.model_version}.h5"
+                
+                if model_file.exists():
+                    # Print to console for visibility
+                    print(f"✓ Using Neural AI (model v1) for player {session.ai_player}")
+                    print(f"  Model file: {model_file}")
+                    print(f"  Model input shape: {ai.model.input_shape}")
+                    logger.info(f"✓ Using Neural AI (model v1) for player {session.ai_player}")
+                    logger.info(f"  Model file: {model_file}")
+                    logger.info(f"  Model input shape: {ai.model.input_shape}")
+                else:
+                    logger.warning("Neural AI model file not found, falling back to minimax")
+                    ai = None
+            else:
+                logger.warning("Neural AI model not initialized, falling back to minimax")
+                ai = None
+        except Exception as e:
+            # Fallback to minimax if neural AI fails to load
+            logger.warning(f"Failed to load Neural AI, falling back to minimax: {e}")
+            import traceback
+            logger.debug(traceback.format_exc())
+            ai = None
+        
+        # Fallback to minimax if neural AI not available
+        if ai is None:
+            ai = BasicAI(depth=4)
+            logger.info(f"Using Minimax AI (depth 4) for player {session.ai_player}")
+        
         ai.set_player(session.ai_player)
         board = Board(session.engine.board.get_board())
         ai_column = ai.get_move(board, session.engine.current_player)
+        logger.debug(f"AI (player {session.ai_player}) chose column {ai_column}")
         
         # Make the move
         result = session.make_move(ai_column)

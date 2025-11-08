@@ -44,3 +44,7 @@ playwright-report/
 node_modules/
 package-lock.json
 
+# Training data (large files)
+training_data/processed/*.npz
+training_data/raw/
+
